@@ -4,7 +4,7 @@ from fastapi import UploadFile
 import fitz #pymuPDF #help read the pdf file 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.config import COLLECTION_NAME
-
+from src.embeddings import get_embeddings
 
 #work of ingest_file function to take whatever is coming to endpoint /upload and then read it and just chuck it 
 
@@ -32,21 +32,18 @@ async def ingest_pdf(file: UploadFile):
     #chunk_size is total number of characters we want to pass to the LLM at one go  and overlap is the number of words we want to keep in common between chunks to maintain the context 
     splitter = RecursiveCharacterTextSplitter(chunk_size=500,chunk_overlap=100)
     chunks=splitter.split_documents(docs)
-    print(f"Created {len(chunks)} text chunks")
+    print("Generating embeddings...")
+    texts = [chunk.page_content for chunk in chunks]
+    embeddings = get_embeddings(texts)
+
     return {
-    "filename": file.filename,
-    "total_pages": page_count,
-    "total_chunks": len(chunks),
-    "message": chunks,
-    "status": "success"
-  }
-
-   
-
-
-    # print("Generating embeddings...")
-    # texts=[chunk.page_content for chunk in chunks]
-    # embeddings=get_embeddings(texts)
+        "filename": file.filename,
+        "total_pages": page_count,
+        "total_chunks": len(chunks),
+        "chunks": [{"page_content": chunk.page_content, "metadata": chunk.metadata} for chunk in chunks],
+        "embeddings": embeddings,
+        "status": "success"
+    }
 
     # #get Qdrant client
     # client=get_qdrant_client()

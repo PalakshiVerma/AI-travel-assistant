@@ -38,9 +38,14 @@ async def upload_file(file: UploadFile = None):
         return {"message": "Please upload a PDF file"}
     
     try:
-        data=await ingest_pdf(file)#calling our ingest_pdf function from ingest.py
-        # return {"message": data}
-        return data
+        embeddings = await ingest_pdf(file) # calling our async ingest_pdf function from ingest.py
+        return {"message": embeddings}
+        # return data
 
     except Exception as e:
         return {"message": f"Error processing file: {str(e)}"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("src.main:app", host="127.0.0.1", port=8001, reload=True)
+
