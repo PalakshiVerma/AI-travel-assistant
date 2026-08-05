@@ -1,3 +1,6 @@
+AI Travel Itinerary Assistant
+
+
 #Backend command
 .\venv\Scripts\python.exe -m uvicorn src.main:app --reload
 
@@ -6,3 +9,4 @@
 
 #activated  virtual environment  
 .\venv\Scripts\Activate.ps1
+
