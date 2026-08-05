@@ -1,11 +1,12 @@
 #backend
 
+from src.retriever import retrieve_docs
 from src.vectorstores import init_qdrant
 from fastapi import FastAPI, UploadFile
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
 from src.ingest import ingest_pdf
-
+from src.retriever import retrieve_docs
 
 #why are we calling VDB here :this runs just before the server is actually avabile or ready to take the request  
 @asynccontextmanager
@@ -32,7 +33,8 @@ class QueryRequest(BaseModel):
 # takes up a parameter and then return the logic 
 @app.post("/ask")
 async def ask_question(req: QueryRequest):
-    return {"response": "your answer"}
+    res = retrieve_docs(req.query)
+    return {"response": res}
 
 
 @app.post("/upload")
