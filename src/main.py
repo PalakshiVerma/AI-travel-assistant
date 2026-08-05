@@ -1,13 +1,19 @@
 #backend
 
+from src.vectorstores import init_qdrant
 from fastapi import FastAPI, UploadFile
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
 from src.ingest import ingest_pdf
 
+
+#why are we calling VDB here :this runs just before the server is actually avabile or ready to take the request  
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # initialized resources here
+    # initialize qdrant database
+    print("Initializing Qdrant database...")
+    init_qdrant()
+    print("Database initialization complete.")
     yield
 
 
@@ -38,14 +44,14 @@ async def upload_file(file: UploadFile = None):
         return {"message": "Please upload a PDF file"}
     
     try:
-        embeddings = await ingest_pdf(file) # calling our async ingest_pdf function from ingest.py
-        return {"message": embeddings}
+        await ingest_pdf(file) # calling our async ingest_pdf function from ingest.py
+        return {"message":"File processed successfully"}
         # return data
 
     except Exception as e:
         return {"message": f"Error processing file: {str(e)}"}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("src.main:app", host="127.0.0.1", port=8001, reload=True)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run("src.main:app", host="127.0.0.1", port=8001, reload=True)
 
