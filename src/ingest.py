@@ -5,6 +5,7 @@ import fitz #pymuPDF #help read the pdf file
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.config import COLLECTION_NAME
 from src.embeddings import get_embeddings
+from src.vectorstores import get_qdrant_client
 
 #work of ingest_file function to take whatever is coming to endpoint /upload and then read it and just chuck it 
 
@@ -36,26 +37,24 @@ async def ingest_pdf(file: UploadFile):
     texts = [chunk.page_content for chunk in chunks]
     embeddings = get_embeddings(texts)
 
+    # get Qdrant client
+    client = get_qdrant_client()
+
+    # prepare payloads
+    payloads = [{"text": chunk.page_content, **chunk.metadata} for chunk in chunks]
+
+    # upload vectors and payloads to Qdrant
+    print(f"Uploading {len(chunks)} documents to collection '{COLLECTION_NAME}'...")
+    client.upload_collection(
+        collection_name=COLLECTION_NAME,
+        vectors=embeddings,
+        payload=payloads
+    )
+    print(f"Upload complete! Added {len(chunks)} chunks from {page_count} pages")
+
     return {
         "filename": file.filename,
         "total_pages": page_count,
         "total_chunks": len(chunks),
-        "chunks": [{"page_content": chunk.page_content, "metadata": chunk.metadata} for chunk in chunks],
-        "embeddings": embeddings,
         "status": "success"
     }
-
-    # #get Qdrant client
-    # client=get_qdrant_client()
-
-    # #perpare payloads
-    # payloads=[{"text":chunk.page_content, **chunk.metadata} for chunk in chunks]
-
-    # #upload points
-    # print(f"Uploading {len(chunks)} documents to collection '{COLLECTION_NAME}'...")
-    # client.upload_collection(
-    #     collection_name=COLLECTION_NAME,
-    #     vectors=embeddings,
-    #     payloads=payloads
-    # )
-    # print(f"Upload complete ! Added {len(chunks)} chunks from {page_count} pages")
