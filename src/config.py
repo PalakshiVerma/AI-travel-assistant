@@ -11,5 +11,5 @@ EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Model provider: 'huggingface' or 'openai'
-MODEL_PROVIDER = "openai"  # Change to 'openai' to use OpenAI
+MODEL_PROVIDER = "huggingface"
 FASTAPI_URL = "http://localhost:8000"
