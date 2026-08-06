@@ -39,14 +39,27 @@ else:
 
 def generate_answer(query: str) -> str:
     docs = retrieve_docs(query, top_k=2)
-    context = "\n".join(docs)[:800]
+    context = "\n".join(docs)[:800] if docs else ""
     
     if MODEL_PROVIDER == "openai":
-        result = qa_chain.invoke({"context": context, "question": query})
+        result = qa_chain.invoke({"context": context if context else "No extra document context provided.", "question": query})
         return result.content
 
-    prompt = prompt_template.format(context=context, question=query)
+    if context.strip():
+        prompt = f"Travel Guide Info: {context}\n\nTask: Based on the travel guide info, give a detailed answer to the question: {query}\n\nAnswer:"
+    else:
+        prompt = f"Task: Write a detailed travel itinerary and suggestions for: {query}\n\nItinerary:"
+
     inputs = tokenizer(prompt, return_tensors="pt")
-    outputs = model.generate(**inputs, max_new_tokens=256)
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=256,
+        min_new_tokens=40,
+        do_sample=True,
+        temperature=0.7,
+        top_p=0.9,
+        repetition_penalty=1.2
+    )
     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return answer
+
