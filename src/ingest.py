@@ -1,4 +1,8 @@
-#here we will have al logic thats need for reading the file 
+"""
+Document ingestion pipeline for processing travel guide PDF uploads.
+Extracts text from PDF pages using PyMuPDF, splits text into optimal chunks with LangChain splitters,
+and generates embeddings to index chunk payloads into the Qdrant vector database.
+"""
 from langchain_core.documents import Document
 from fastapi import UploadFile
 import fitz #pymuPDF #help read the pdf file 

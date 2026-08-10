@@ -1,3 +1,8 @@
+"""
+Vector store management module for interacting with Qdrant database.
+Provides client instantiation for Qdrant API connection and collection initialization utilities.
+Ensures vector collections exist with proper dimensions and cosine similarity metrics upon application start.
+"""
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
 from src.config import QDRANT_HOST, QDRANT_API_KEY, COLLECTION_NAME

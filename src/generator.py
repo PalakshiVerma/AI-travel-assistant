@@ -1,4 +1,8 @@
-
+"""
+Answer generation module integrating Large Language Models (LLMs).
+Combines retrieved travel guide context with user queries using LangChain prompt templates.
+Supports model generation from either Hugging Face (google/flan-t5-base) or OpenAI (gpt-3.5-turbo).
+"""
 from langchain_core.prompts import PromptTemplate
 from src.retriever import retrieve_docs
 from src.config import MODEL_PROVIDER, OPENAI_API_KEY

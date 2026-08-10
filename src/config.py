@@ -1,4 +1,8 @@
-# OpenAI API key (set this if using OpenAI)
+"""
+Configuration module for application settings and environment variables.
+Loads API keys, Qdrant cluster host settings, collection names, and model configuration options.
+Configures default embedding model and LLM provider choice (HuggingFace or OpenAI).
+"""
 import os
 from dotenv import load_dotenv
 
