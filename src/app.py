@@ -1,6 +1,8 @@
-#frontend
-
-#implement frontend for the application
+"""
+Streamlit UI frontend for the AI Travel Assistant application.
+Provides interactive interfaces for users to upload travel guide PDF documents and submit questions.
+Communicates with the FastAPI backend server to display generated travel itineraries and answers.
+"""
 import requests  
 import streamlit as st
 
@@ -19,10 +21,10 @@ with st.sidebar:
                 try:
                     files = {"file": uploaded_file}
                     response = requests.post(f"{FASTAPI_URL}/upload", files=files)
-                    if response.status_code == 200:
-                        st.success(response.json()["message"])
+                    if response.status_code == 201:
+                        st.success(response.json().get("message", "File processed successfully"))
                     else:
-                        st.error(f"Error: {response.json().get('message', 'Unknown error')}")
+                        st.error(f"Error: {response.json().get('detail', 'Unknown error')}")
                 except Exception as e:
                     st.error(f"Error processing file: {str(e)}")
 #Main content
@@ -39,7 +41,7 @@ if st.button("Ask"):
                     st.success("Here’s your travel plan:")
                     st.write(answer)
                 else:
-                    st.error("Server error! Try again later.")
+                    st.error(response.json().get("detail", "Server error! Try again later."))
             except Exception as e:
                 st.error(f"Could not reach the FastAPI server: {e}")
     else:

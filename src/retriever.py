@@ -1,5 +1,8 @@
-#logic to retrieve data according to user's query 
-
+"""
+Semantic search retrieval module for querying relevant travel guide context.
+Converts user text queries into embeddings and queries Qdrant vector database for top matching chunks.
+Returns extracted relevant text payloads to be consumed by the answer generation engine.
+"""
 from src.embeddings import get_embeddings
 from src.config import COLLECTION_NAME
 from src.vectorstores import get_qdrant_client
