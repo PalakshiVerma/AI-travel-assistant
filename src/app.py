@@ -29,7 +29,7 @@ with st.sidebar:
                     st.error(f"Error processing file: {str(e)}")
 #Main content
 st.subheader("❓ Ask Your Question")
-query = st.text_input("Enter your travel question (e.g., Best places to visit in Paris):")
+query = st.text_input("Enter your travel question :")
 
 if st.button("Ask"):
     if query.strip():

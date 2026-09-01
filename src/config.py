@@ -13,7 +13,9 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 
-# Model provider: 'huggingface' or 'openai'
-MODEL_PROVIDER = "huggingface"
+# Model provider: 'huggingface', 'openai', or 'gemini'
+MODEL_PROVIDER = "gemini"
 FASTAPI_URL = "http://localhost:8000"
