@@ -5,14 +5,18 @@ Supports model generation from either Hugging Face (google/flan-t5-base) or Open
 """
 from langchain_core.prompts import PromptTemplate
 from src.retriever import retrieve_docs
-from src.config import MODEL_PROVIDER, OPENAI_API_KEY
+import os
+from src.config import MODEL_PROVIDER, OPENAI_API_KEY, GROQ_API_KEY, GEMINI_API_KEY
 
 # Hugging Face imports
 from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 from langchain_huggingface import HuggingFacePipeline
 
-# OpenAI imports
+# OpenAI / Groq imports
 from langchain_openai import ChatOpenAI
+
+# Google Gemini imports
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 prompt_template = PromptTemplate(
@@ -30,12 +34,28 @@ Question:
 Answer:"""
 )
 
-if MODEL_PROVIDER == "huggingface":
-    model_id = "google/flan-t5-base"
+if MODEL_PROVIDER == "gemini":
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        google_api_key=GEMINI_API_KEY,
+        temperature=0.7
+    )
+    qa_chain = prompt_template | llm
+elif MODEL_PROVIDER == "huggingface":
+    model_id = "google/flan-t5-large"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
 elif MODEL_PROVIDER == "openai":
-    llm = ChatOpenAI(api_key=OPENAI_API_KEY, model_name="gpt-3.5-turbo", temperature=0.7)
+    api_key = GROQ_API_KEY or OPENAI_API_KEY
+    base_url = "https://api.groq.com/openai/v1" if GROQ_API_KEY else None
+    model_name = "llama-3.3-70b-versatile" if GROQ_API_KEY else "gpt-3.5-turbo"
+    
+    llm = ChatOpenAI(
+        api_key=api_key,
+        base_url=base_url,
+        model_name=model_name,
+        temperature=0.7
+    )
     qa_chain = prompt_template | llm
 else:
     raise ValueError(f"Unknown MODEL_PROVIDER: {MODEL_PROVIDER}")
@@ -45,24 +65,29 @@ def generate_answer(query: str) -> str:
     docs = retrieve_docs(query, top_k=2)
     context = "\n".join(docs)[:800] if docs else ""
     
-    if MODEL_PROVIDER == "openai":
+    if MODEL_PROVIDER in ["openai", "gemini"]:
         result = qa_chain.invoke({"context": context if context else "No extra document context provided.", "question": query})
         return result.content
 
     if context.strip():
-        prompt = f"Travel Guide Info: {context}\n\nTask: Based on the travel guide info, give a detailed answer to the question: {query}\n\nAnswer:"
+        prompt = (
+        f"Context from travel guide:\n{context}\n\n"
+        f"Question: {query}\n\n"
+        f"Based on the context, provide a clear, helpful answer:\n"
+    )
     else:
-        prompt = f"Task: Write a detailed travel itinerary and suggestions for: {query}\n\nItinerary:"
+        prompt = f"Question: {query}\n\nAnswer:"
+
 
     inputs = tokenizer(prompt, return_tensors="pt")
     outputs = model.generate(
         **inputs,
         max_new_tokens=256,
-        min_new_tokens=40,
+        no_repeat_ngram_size=3, 
         do_sample=True,
-        temperature=0.7,
+        temperature=0.3,
         top_p=0.9,
-        repetition_penalty=1.2
+        repetition_penalty=1.5
     )
     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return answer

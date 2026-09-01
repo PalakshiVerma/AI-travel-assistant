@@ -252,154 +252,6 @@ AI-travel-assistant/
 
 ---
 
-## 🔄 Application Flow
-
-### 1. Uploading a Travel Guide
-
-The user uploads a PDF through Streamlit.
-
-```text
-Streamlit
-   ↓
-POST /upload
-   ↓
-FastAPI validation
-   ↓
-PyMuPDF
-   ↓
-Extract page text
-   ↓
-RecursiveCharacterTextSplitter
-   ↓
-Generate embeddings
-   ↓
-Qdrant
-```
-
-Each chunk is stored along with metadata such as:
-
-```json
-{
-  "text": "Travel guide content...",
-  "page": 4,
-  "source": "paris-guide.pdf"
-}
-```
-
----
-
-### 2. Asking a Question
-
-The user enters a natural-language question.
-
-Example:
-
-```text
-What are the best places to visit in Paris?
-```
-
-The system performs:
-
-```text
-Question
-   ↓
-Embedding
-   ↓
-Qdrant similarity search
-   ↓
-Top relevant chunks
-   ↓
-Context construction
-   ↓
-LLM prompt
-   ↓
-Generated answer
-```
-
----
-
-## 🔌 API Documentation
-
-### `GET /`
-
-Checks whether the backend is running.
-
-#### Response
-
-```json
-{
-  "message": "AI Travel Assistant API is running"
-}
-```
-
----
-
-### `POST /upload`
-
-Uploads and processes a PDF travel guide.
-
-#### Request
-
-```text
-multipart/form-data
-file=<travel-guide.pdf>
-```
-
-#### Supported file type
-
-```text
-PDF
-```
-
-#### Maximum file size
-
-```text
-10 MB
-```
-
-#### Successful response
-
-```json
-{
-  "filename": "paris-guide.pdf",
-  "total_pages": 20,
-  "total_chunks": 85,
-  "status": "success",
-  "message": "File processed successfully"
-}
-```
-
----
-
-### `POST /ask`
-
-Generates an answer based on retrieved travel-guide information.
-
-#### Request
-
-```json
-{
-  "query": "What are the best places to visit in Paris?"
-}
-```
-
-#### Response
-
-```json
-{
-  "response": "..."
-}
-```
-
-#### Validation
-
-Empty queries are rejected with:
-
-```text
-400 Bad Request
-```
-
----
 
 ## ⚙️ Installation
 
@@ -527,49 +379,7 @@ streamlit run src/app.py
 
 The Streamlit application will open in your browser.
 
----
 
-## 🧪 Example Usage
-
-### Step 1 — Upload a travel guide
-
-Upload a PDF such as:
-
-```text
-paris-travel-guide.pdf
-```
-
-Click:
-
-```text
-Process Guide
-```
-
-The backend extracts and indexes the document.
-
----
-
-### Step 2 — Ask a question
-
-Example questions:
-
-```text
-What are the best places to visit in Paris?
-```
-
-```text
-Create a 3-day itinerary based on the travel guide.
-```
-
-```text
-Which attractions are recommended for first-time visitors?
-```
-
-```text
-What are the important travel tips mentioned in the guide?
-```
-
----
 
 ## 🛡️ Error Handling
 
@@ -671,45 +481,8 @@ This project demonstrates practical implementation of:
 * **Environment-based configuration**
 * **Modular software architecture**
 
----
 
-## 🎯 Why RAG?
 
-Traditional LLM applications rely primarily on information learned during model training.
-
-This project instead provides the model with relevant information retrieved from user-uploaded travel guides.
-
-```text
-Traditional LLM
-
-User Question
-      ↓
-     LLM
-      ↓
-   Answer
-```
-
-With RAG:
-
-```text
-User Question
-      ↓
-Embedding
-      ↓
-Vector Search
-      ↓
-Relevant Documents
-      ↓
-Context + Question
-      ↓
-     LLM
-      ↓
-Grounded Answer
-```
-
-This approach makes the assistant better suited for answering questions about **specific documents and travel guides**.
-
----
 
 ## 👨‍💻 Project Purpose
 
@@ -721,15 +494,6 @@ It demonstrates how an AI-powered application can be structured as a modular sys
 
 ---
 
-## 📄 Documentation
-
-Additional project documentation is available in:
-
-* `PRD.md` — Product Requirements Document
-* `HLD.md` — High-Level Design
-* `LLD.md` — Low-Level Design
-
----
 
 ## 📜 License
 
