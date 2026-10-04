@@ -24,7 +24,7 @@ def init_qdrant():
             client.create_collection(
                 collection_name=COLLECTION_NAME,
                 vectors_config=VectorParams(
-                    size=384,  # SentenceTransformer all-MiniLM-L6-v2 embedding size
+                    size=768,  # Google text-embedding-004 embedding size
                     distance=Distance.COSINE,
                 ),
             )
