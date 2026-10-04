@@ -16,15 +16,20 @@ def get_qdrant_client():
 def init_qdrant():
     # connect to qdrant cloud or local
     client = get_qdrant_client()
-    # create collection if it doesn't exist
-    existing_collections = [col.name for col in client.get_collections().collections]
-    if COLLECTION_NAME not in existing_collections:
-        print(f"Creating collection '{COLLECTION_NAME}'...")
-        client.create_collection(
-            collection_name=COLLECTION_NAME,
-            vectors_config=VectorParams(
-                size=384,  # SentenceTransformer all-MiniLM-L6-v2 embedding size
-                distance=Distance.COSINE,
-            ),
-        )
+    try:
+        # create collection if it doesn't exist
+        existing_collections = [col.name for col in client.get_collections().collections]
+        if COLLECTION_NAME not in existing_collections:
+            print(f"Creating collection '{COLLECTION_NAME}'...")
+            client.create_collection(
+                collection_name=COLLECTION_NAME,
+                vectors_config=VectorParams(
+                    size=384,  # SentenceTransformer all-MiniLM-L6-v2 embedding size
+                    distance=Distance.COSINE,
+                ),
+            )
+        print("Qdrant connection successful.")
+    except Exception as e:
+        print(f"WARNING: Could not connect to Qdrant on startup: {e}")
+        print("WARNING: The server will start, but upload/query features may fail until Qdrant is reachable.")
     return client

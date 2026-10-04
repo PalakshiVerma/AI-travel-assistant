@@ -3,10 +3,11 @@ Streamlit UI frontend for the AI Travel Assistant application.
 Provides interactive interfaces for users to upload travel guide PDF documents and submit questions.
 Communicates with the FastAPI backend server to display generated travel itineraries and answers.
 """
+import os
 import requests  
 import streamlit as st
 
-FASTAPI_URL = "http://localhost:8000"
+FASTAPI_URL = os.getenv("FASTAPI_URL", "http://localhost:8000")
 
 st.title("AI Travel Itinerary Assistant ")
 st.markdown("Ask about any travel destination and get a personalized itinerary!")

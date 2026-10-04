@@ -17,5 +17,5 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 
 # Model provider: 'huggingface', 'openai', or 'gemini'
-MODEL_PROVIDER = "gemini"
+MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "gemini")
 FASTAPI_URL = "http://localhost:8000"
