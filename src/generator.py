@@ -8,17 +8,6 @@ from src.retriever import retrieve_docs
 import os
 from src.config import MODEL_PROVIDER, OPENAI_API_KEY, GROQ_API_KEY, GEMINI_API_KEY
 
-# Hugging Face imports
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
-from langchain_huggingface import HuggingFacePipeline
-
-# OpenAI / Groq imports
-from langchain_openai import ChatOpenAI
-
-# Google Gemini imports
-from langchain_google_genai import ChatGoogleGenerativeAI
-
-
 prompt_template = PromptTemplate(
     input_variables=["context", "question"],
     template="""You are a helpful travel assistant.
@@ -35,6 +24,7 @@ Answer:"""
 )
 
 if MODEL_PROVIDER == "gemini":
+    from langchain_google_genai import ChatGoogleGenerativeAI
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         google_api_key=GEMINI_API_KEY,
@@ -42,10 +32,12 @@ if MODEL_PROVIDER == "gemini":
     )
     qa_chain = prompt_template | llm
 elif MODEL_PROVIDER == "huggingface":
+    from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
     model_id = "google/flan-t5-large"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
 elif MODEL_PROVIDER == "openai":
+    from langchain_openai import ChatOpenAI
     api_key = GROQ_API_KEY or OPENAI_API_KEY
     base_url = "https://api.groq.com/openai/v1" if GROQ_API_KEY else None
     model_name = "llama-3.3-70b-versatile" if GROQ_API_KEY else "gpt-3.5-turbo"

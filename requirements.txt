@@ -1,7 +1,5 @@
-langchain
-transformers
+--extra-index-url https://download.pytorch.org/whl/cpu
 torch
-accelerate
 sentence-transformers
 qdrant-client
 pymupdf
@@ -10,8 +8,8 @@ streamlit
 uvicorn
 python-dotenv
 requests
+langchain
 langchain-community
-langchain-huggingface
 langchain-openai
-python-multipart
 langchain-google-genai
+python-multipart
