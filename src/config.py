@@ -10,7 +10,7 @@ load_dotenv()
 
 QDRANT_HOST = os.getenv("QDRANT_HOST")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
-COLLECTION_NAME = os.getenv("COLLECTION_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME") or "travel_assistant_v2"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
