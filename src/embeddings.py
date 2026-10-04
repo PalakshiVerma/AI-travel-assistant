@@ -17,5 +17,6 @@ def get_model():
 
 def get_embeddings(texts):
     model = get_model()
-    return model.encode(texts).tolist()
+    # Use a small batch size to prevent PyTorch from exceeding 512MB RAM on large PDFs
+    return model.encode(texts, batch_size=8, show_progress_bar=False).tolist()
      
